@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo de Dados</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+
+        .game-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .status, #turn-indicator {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #555;
+        }
+
+        #turn-indicator {
+            color: #4CAF50;
+        }
+
+        .dice {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .player-board {
+            display: flex;
+            justify-content: space-evenly;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .player {
+            background-color: #fafafa;
+            border: 2px solid #4CAF50;
+            padding: 20px;
+            border-radius: 15px;
+            width: 250px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+            max-width: 270px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .player:hover {
+            transform: scale(1.05);
+        }
+
+        .player-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #4CAF50;
+        }
+
+        .board {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 240px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            font-size: 1.3em;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            margin: 5px;
+        }
+
+        .cell:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.1);
+        }
+
+        .cell.marked {
+            background-color: #4CAF50;
+            color: white;
+            pointer-events: none;
+        }
+
+        #nuevo-juego {
+            display: none;
+            margin-top: 30px;
+            font-size: 1.2em;
+            background-color: #FF5733;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+        }
+
+        #nuevo-juego:hover {
+            background-color: #e04e2d;
+        }
+
+        .dice-result {
+            font-size: 1.5em;
+            margin-top: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>Bingo de Dados</h1>
+    <p id="status">¡Haz tu movimiento!</p>
+    <div id="turn-indicator"></div>
+
+    <div id="player-boards" class="player-board"></div>
+
+    <div class="dice">
+        <button id="roll-dice">Tirar Dados</button>
+        <p id="dice-result"></p>
+    </div>
+
+    <button id="nuevo-juego">Nuevo Juego</button>
+</div>
+
+<script>
+    let jugadores = [];
+    let turnoJugador = 0;
+    let tiradasRestantes = 20;
+    let gameOver = false;
+
+    // Función para lanzar un par de dados
+    function tirarDados() {
+        return Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6) + 1;
+    }
+
+    // Función para generar el tablero de Bingo
+    function generarTablero() {
+        return [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    }
+
+    // Función para mostrar las tarjetas de los jugadores
+    function mostrarTableros() {
+        let playerBoardsHTML = '';
+        jugadores.forEach((jugador, index) => {
+            playerBoardsHTML += `
+                <div class="player">
+                    <p class="player-name">${jugador.nombre}</p>
+                    <div class="board" id="board-${index}">
+                        ${jugador.tablero.map((num, i) => {
+                            // Generar filas de manera personalizada
+                            const filas = [
+                                [2, 3, 4],
+                                [5, 6, 7],
+                                [8, 9, 10],
+                                [11, 12]
+                            ];
+
+                            // Mostrar las celdas de acuerdo a las filas
+                            return filas.map(fila => 
+                                fila.includes(num) ? 
+                                `<div class="cell" onclick="marcarNumero(${num}, ${index})">${num}</div>` : ''
+                            ).join('');
+                        }).join('')}
+                    </div>
+                    <p id="player-${index}-tiradas">Tiradas restantes: ${jugador.tiradasRestantes}</p>
+                </div>
+            `;
+        });
+        document.getElementById('player-boards').innerHTML = playerBoardsHTML;
+    }
+
+    // Función para marcar un número en la tarjeta de un jugador
+    function marcarNumero(numero, jugadorIndex) {
+        if (gameOver) return;
+        const jugador = jugadores[jugadorIndex];
+        if (jugador.numerosMarcados.includes(numero)) return; // Evitar marcar el mismo número dos veces
+        jugador.numerosMarcados.push(numero);
+        const cells = document.querySelectorAll(`#board-${jugadorIndex} .cell`);
+        cells.forEach(cell => {
+            if (parseInt(cell.textContent) === numero) {
+                cell.classList.add('marked');
+            }
+        });
+        verificarVictoria();
+    }
+
+    // Función para verificar si algún jugador ha ganado
+    function verificarVictoria() {
+        if (gameOver) return;
+        const player = jugadores[turnoJugador];
+        if (player.numerosMarcados.length === 11) {  // 11 números para un tablero completo (2-12)
+            gameOver = true;
+            document.getElementById('status').textContent = `${player.nombre} ¡GANÓ con todos los números marcados!`;
+            document.getElementById('nuevo-juego').style.display = 'inline-block';
+        }
+    }
+
+    // Función para lanzar los dados y mostrar el resultado
+    function lanzarDados() {
+        if (gameOver) return;
+        const jugadorActual = jugadores[turnoJugador];
+
+        if (jugadorActual.tiradasRestantes === 0) {
+            siguienteJugador();
+            return;
+        }
+
+        const resultado = tirarDados();
+        document.getElementById('dice-result').textContent = `¡Los dados muestran: ${resultado}!`;
+        marcarNumero(resultado, turnoJugador);
+        jugadorActual.tiradasRestantes--;
+        document.getElementById(`player-${turnoJugador}-tiradas`).textContent = `Tiradas restantes: ${jugadorActual.tiradasRestantes}`;
+        siguienteJugador();
+    }
+
+    // Función para avanzar al siguiente jugador
+    function siguienteJugador() {
+        turnoJugador = (turnoJugador + 1) % jugadores.length;
+        document.getElementById('turn-indicator').textContent = `Es el turno de ${jugadores[turnoJugador].nombre}`;
+    }
+
+    // Función para iniciar el juego
+    function nuevoJuego() {
+        let cantidadJugadores = parseInt(prompt("¿Cuántos jugadores participan? (1-4 jugadores)"));
+        if (cantidadJugadores >= 1 && cantidadJugadores <= 4) {
+            jugadores = [];
+            for (let i = 0; i < cantidadJugadores; i++) {
+                let nombre = prompt(`Ingresa el nombre del jugador ${i + 1}:`);
+                jugadores.push({
+                    nombre: nombre,
+                    tablero: generarTablero(),
+                    numerosMarcados: [],
+                    tiradasRestantes: 20
+                });
+            }
+            gameOver = false;
+            turnoJugador = 0;
+            mostrarTableros();
+            document.getElementById('status').textContent = `Es el turno de ${jugadores[turnoJugador].nombre}`;
+            document.getElementById('nuevo-juego').style.display = 'none';
+            document.getElementById('roll-dice').style.display = 'inline-block';
+        } else {
+            alert("Por favor, ingresa un número válido de jugadores (1-4).");
+        }
+    }
+
+    // Eventos de botones
+    document.getElementById('roll-dice').addEventListener('click', lanzarDados);
+    document.getElementById('nuevo-juego').addEventListener('click', nuevoJuego);
+
+    // Inicializar juego
+    nuevoJuego();
+</script>
+
+</body>
+</html>
