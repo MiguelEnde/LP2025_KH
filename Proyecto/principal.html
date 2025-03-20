@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Juegos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #16213e;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #1b2838;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        nav button {
+            background-color: #ff3385;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        nav button:hover {
+            background-color: #d62c6a;
+        }
+
+        .juego {
+            display: none;
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .game-container, .instructions {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #3e8e41;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #ff99cc;
+            text-shadow: 3px 3px 10px black;
+        }
+
+        #bingo {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <button onclick="mostrarJuego('bingo')">Bingo</button>
+        <button onclick="mostrarJuego('ppt')">Piedra, Papel o Tijeras</button>
+        <button onclick="mostrarJuego('adivina')">Adivina el Número</button>
+    </nav>
+    
+    <div id="bingo" class="juego">
+        <div class="game-container">
+            <h1>Bingo de Números Aleatorios</h1>
+            <p id="status">¡Haz tu movimiento!</p>
+            <button id="btn-generar-numero">Generar Número</button>
+        </div>
+        <div class="instructions">
+            <h2>Instrucciones</h2>
+            <p>1. Haz clic en "Generar Número" para lanzar los dados y obtener dos números aleatorios entre 1 y 12.</p>
+            <p>2. Los números generados se sumarán. Si la suma coincide con un número de tu tablero, se marcará esa casilla.</p>
+            <p>3. El objetivo es marcar todos los números de tu tablero antes que los demás jugadores.</p>
+            <p>4. Cada jugador tiene un número limitado de intentos.</p>
+        </div>
+    </div>
+    
+    <div id="ppt" class="juego">
+        <h1>Piedra, Papel o Tijeras</h1>
+        <button onclick="jugarPPT('piedra')">Piedra</button>
+        <button onclick="jugarPPT('papel')">Papel</button>
+        <button onclick="jugarPPT('tijeras')">Tijeras</button>
+        <p id="ppt-resultado"></p>
+    </div>
+    
+    <div id="adivina" class="juego">
+        <h1>Adivina el Número</h1>
+        <p>Introduce un número entre 1 y 100:</p>
+        <input type="number" id="numero-input">
+        <button onclick="adivinarNumero()">Adivinar</button>
+        <p id="adivina-resultado"></p>
+    </div>
+    
+    <script>
+        function mostrarJuego(juego) {
+            document.querySelectorAll('.juego').forEach(j => j.style.display = 'none');
+            document.getElementById(juego).style.display = 'block';
+        }
+
+        function jugarPPT(eleccionJugador) {
+            const opciones = ['piedra', 'papel', 'tijeras'];
+            const eleccionMaquina = opciones[Math.floor(Math.random() * 3)];
+
+            let resultado = '';
+            if (eleccionJugador === eleccionMaquina) {
+                resultado = '¡Empate!';
+            } else if (
+                (eleccionJugador === 'piedra' && eleccionMaquina === 'tijeras') ||
+                (eleccionJugador === 'papel' && eleccionMaquina === 'piedra') ||
+                (eleccionJugador === 'tijeras' && eleccionMaquina === 'papel')
+            ) {
+                resultado = '¡Ganaste!';
+            } else {
+                resultado = '¡Perdiste!';
+            }
+
+            document.getElementById('ppt-resultado').innerText = `Elegiste ${eleccionJugador}, la máquina eligió ${eleccionMaquina}. ${resultado}`;
+        }
+
+        function adivinarNumero() {
+            const numeroCorrecto = 42; // Se puede cambiar a Math.floor(Math.random() * 100) + 1;
+            const numeroJugador = parseInt(document.getElementById('numero-input').value);
+            
+            if (isNaN(numeroJugador)) {
+                document.getElementById('adivina-resultado').innerText = "Por favor, ingresa un número.";
+                return;
+            }
+
+            if (numeroJugador === numeroCorrecto) {
+                document.getElementById('adivina-resultado').innerText = "¡Felicidades! Adivinaste el número.";
+            } else if (numeroJugador > numeroCorrecto) {
+                document.getElementById('adivina-resultado').innerText = "El número es menor.";
+            } else {
+                document.getElementById('adivina-resultado').innerText = "El número es mayor.";
+            }
+        }
+    </script>
+</body>
+</html>

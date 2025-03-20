@@ -3,237 +3,407 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Dados</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <title>Bingo de Números Aleatorios</title>
     <style>
         body {
-            background: url('https://media.istockphoto.com/id/108161789/es/foto/ruleta.jpg?s=1024x1024&w=is&k=20&c=hc-V1RGEbN0kM_X8bK9ggpJMwpx3lfYN8yPETcFNeGk=') no-repeat center center fixed; 
-            background-size: cover;
-            font-family: 'Arial', sans-serif;
-            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
         }
-        .sum-game {
-            background: rgba(255, 255, 255, 0.9);
+        .game-container {
+            text-align: center;
+            background-color: #fff;
             padding: 20px;
             border-radius: 10px;
-            text-align: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             width: 80%;
-            max-width: 600px;
+            max-width: 900px;
         }
-        .progress {
-            height: 25px;
-            margin-top: 10px;
-            transition: width 0.5s ease-in-out;
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+            margin-top: 20px;
+            justify-items: center;
         }
-        .dice-box {
+        .cell {
+            width: 60px;
+            height: 60px;
             display: flex;
             justify-content: center;
-            margin-top: 15px;
-        }
-        .dado {
-            width: 80px;
-            height: 80px;
-            background-color: white;
-            border-radius: 15px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
             align-items: center;
-            justify-items: center;
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
-            font-size: 36px;
-            font-weight: bold;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s ease;
+        }
+        .marked {
+            background-color: #4CAF50;
+            color: white;
+            pointer-events: none;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .player-board {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 20px;
+            gap: 20px;
+            width: 100%;
+        }
+        .player {
+            border: 2px solid #4CAF50;
             padding: 10px;
+            border-radius: 10px;
+            width: 45%;
+            text-align: center;
+            min-width: 250px;
         }
-        .punto {
-            width: 15px;
-            height: 15px;
-            background-color: black;
+        .player-name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        #turn-indicator {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        
+        #resultado {
+            margin-top: 30px;
+            font-size: 40px;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #ff99cc, #ff66cc);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        .empate {
+            background: linear-gradient(135deg, #ffcc00, #ff9900);
+            color: black;
+        }
+        .victoria {
+            background: linear-gradient(135deg, #28a745, #218838);
+        }
+
+        .dado {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background-color: white;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            position: relative;
+            margin: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dado .punto {
+            width: 10px;
+            height: 10px;
+            background-color: #4CAF50;
             border-radius: 50%;
-            visibility: hidden;
+            position: absolute;
         }
-        .visible { visibility: visible; }
 
-        /* Patrón de los dados */
-        .cara-1 .punto:nth-child(5) { visibility: visible; }
-        .cara-2 .punto:nth-child(1),
-        .cara-2 .punto:nth-child(9) { visibility: visible; }
-        .cara-3 .punto:nth-child(1),
-        .cara-3 .punto:nth-child(5),
-        .cara-3 .punto:nth-child(9) { visibility: visible; }
-        .cara-4 .punto:nth-child(1),
-        .cara-4 .punto:nth-child(3),
-        .cara-4 .punto:nth-child(7),
-        .cara-4 .punto:nth-child(9) { visibility: visible; }
-        .cara-5 .punto:nth-child(1),
-        .cara-5 .punto:nth-child(3),
-        .cara-5 .punto:nth-child(5),
-        .cara-5 .punto:nth-child(7),
-        .cara-5 .punto:nth-child(9) { visibility: visible; }
-        .cara-6 .punto:nth-child(1),
-        .cara-6 .punto:nth-child(3),
-        .cara-6 .punto:nth-child(4),
-        .cara-6 .punto:nth-child(6),
-        .cara-6 .punto:nth-child(7),
-        .cara-6 .punto:nth-child(9) { visibility: visible; }
+        .dado[data-num="1"] .punto {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
 
+        .dado[data-num="2"] .punto:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+        .dado[data-num="2"] .punto:nth-child(2) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        .dado[data-num="3"] .punto:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+        .dado[data-num="3"] .punto:nth-child(2) {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .dado[data-num="3"] .punto:nth-child(3) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        .dado[data-num="4"] .punto:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+        .dado[data-num="4"] .punto:nth-child(2) {
+            top: 20%;
+            right: 20%;
+        }
+        .dado[data-num="4"] .punto:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+        }
+        .dado[data-num="4"] .punto:nth-child(4) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        .dado[data-num="5"] .punto:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+        .dado[data-num="5"] .punto:nth-child(2) {
+            top: 20%;
+            right: 20%;
+        }
+        .dado[data-num="5"] .punto:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+        }
+        .dado[data-num="5"] .punto:nth-child(4) {
+            bottom: 20%;
+            right: 20%;
+        }
+        .dado[data-num="5"] .punto:nth-child(5) {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .dado[data-num="6"] .punto:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+        .dado[data-num="6"] .punto:nth-child(2) {
+            top: 20%;
+            right: 20%;
+        }
+        .dado[data-num="6"] .punto:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+        }
+        .dado[data-num="6"] .punto:nth-child(4) {
+            bottom: 20%;
+            right: 20%;
+        }
+        .dado[data-num="6"] .punto:nth-child(5) {
+            top: 50%;
+            left: 20%;
+            transform: translateY(-50%);
+        }
+        .dado[data-num="6"] .punto:nth-child(6) {
+            top: 50%;
+            right: 20%;
+            transform: translateY(-50%);
+        }
     </style>
 </head>
 <body>
-    <div class="sum-game">
-        <h3>Juego de la Suma</h3>
-        <p>Lanza el dado y trata de alcanzar exactamente 15 puntos sin pasarte.</p>
-        <div class="dice-box">
-            <div id="dado-juego" class="dado">
-                <div class="punto"></div><div class="punto"></div><div class="punto"></div>
-                <div class="punto"></div><div class="punto"></div><div class="punto"></div>
-                <div class="punto"></div><div class="punto"></div><div class="punto"></div>
-            </div>
-        </div>
-        <p id="puntos-actuales">Puntos actuales: 0</p>
-        <div class="progress">
-            <div id="progress-bar" class="progress-bar bg-success" style="width: 0%;">0/15</div>
-        </div>
-        <button class="btn btn-warning mt-3" onclick="sumarPuntos()">🎲 Lanzar Dado</button>
-        <p id="resultado-juego"></p>
-    </div>
-    <!-- Apartado debajo de los dados para Generala -->
-<div class="mt-4">
-    <h2 class="text-primary">🃏 Generala 🃏</h2>
-    <p id="resultadoGenerala" class="fw-bold text-light">Lanza 5 dados y verifica tu jugada.</p>
-    <button class="btn btn-warning btn-lg mt-2" onclick="verificarGenerala()">🔍 Verificar Generala</button>
-</div>
 
-<script>
-    function verificarGenerala() {
-        let dados = document.querySelectorAll(".dado");
-        if (dados.length !== 5) {
-            alert("⚠ Debes lanzar exactamente 5 dados para jugar Generala.");
-            return;
-        }
+<div class="game-container">
+    <h1>Bingo de Números Aleatorios</h1>
+    <p id="status">¡Haz tu movimiento!</p>
+    <div id="turn-indicator"></div>
 
-        let valores = [];
-        dados.forEach(dado => {
-            let puntosVisibles = Array.from(dado.querySelectorAll(".punto"))
-                .filter(punto => punto.style.opacity === "1").length;
-            valores.push(puntosVisibles);
-        });
+    <div id="player-boards" class="player-board"></div>
 
-        valores.sort((a, b) => a - b);
-        let resultado = "No hay combinación especial.";
-
-        // Verificar combinaciones
-        if (new Set(valores).size === 1) {
-            resultado = "🎉 ¡Generala! (5 iguales)";
-        } else if (valores.join('') === "12345" || valores.join('') === "23456") {
-            resultado = "🃏 ¡Escalera!";
-        } else if (valores[0] === valores[3] || valores[1] === valores[4]) {
-            resultado = "🎲 ¡Poker! (4 iguales)";
-        } else if ((valores[0] === valores[1] && valores[2] === valores[4]) || (valores[0] === valores[2] && valores[3] === valores[4])) {
-            resultado = "🎭 ¡Full! (3 iguales + 2 iguales)";
-        }
-
-        document.getElementById("resultadoGenerala").textContent = resultado;
-    }
-</script>
-    
-    <script>
-        let puntosJuego = 0;
-
-        function sumarPuntos() {
-            let dadoElemento = document.getElementById("dado-juego");
-            let resultadoTexto = document.getElementById("resultado-juego");
-
-            let valorDado = Math.floor(Math.random() * 6) + 1;
-
-            // Quitar clases de cara previas y agregar la nueva
-            dadoElemento.className = "dado cara-" + valorDado;
-
-            puntosJuego += valorDado;
-
-            document.getElementById("puntos-actuales").textContent = "Puntos actuales: " + puntosJuego;
-            let porcentaje = (puntosJuego / 15) * 100;
-            document.getElementById("progress-bar").style.width = Math.min(porcentaje, 100) + "%";
-            document.getElementById("progress-bar").textContent = Math.min(puntosJuego, 15) + "/15";
-
-            if (puntosJuego === 15) {
-                resultadoTexto.innerHTML = "<strong class='text-success'>🎉 ¡Ganaste! Exactamente 15 puntos. 🎉</strong>";
-            } else if (puntosJuego > 15) {
-                resultadoTexto.innerHTML = "<strong class='text-danger'>😢 Te pasaste de 15 puntos. Inténtalo de nuevo.</strong>";
-                setTimeout(resetJuego, 2000);
-            }
-        }
-
-        function resetJuego() {
-            puntosJuego = 0;
-            document.getElementById("progress-bar").style.width = "0%";
-            document.getElementById("progress-bar").textContent = "0/15";
-            document.getElementById("puntos-actuales").textContent = "Puntos actuales: 0";
-            document.getElementById("resultado-juego").innerHTML = "";
-            document.getElementById("dado-juego").className = "dado";
-        }
-    </script>
-
-    <!-- Apartado para Blackjack con Dados con hasta 4 jugadores -->
-<div class="mt-4">
-    <h2 class="text-primary">🃏 Blackjack con Dados 🎲</h2>
-    <p id="resultadoBlackjack" class="fw-bold text-light">Máximo 4 jugadores. Cada uno intenta llegar a 21.</p>
-    <label for="numJugadores" class="text-light">Número de jugadores:</label>
-    <select id="numJugadores" class="form-select w-50 mx-auto">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-    </select>
-    <button class="btn btn-success btn-lg mt-2" onclick="iniciarBlackjack()">🎲 Comenzar</button>
-    <div id="jugadores" class="mt-3"></div>
+    <button id="btn-generar-numero">Generar Número</button>
+    <button id="nuevo-juego" style="display: none;">Nuevo Juego</button>
+    <div id="resultado"></div>
+    <div id="dado-display"></div> <!-- Aquí se mostrarán los dados visuales -->
 </div>
 
 <script>
     let jugadores = [];
-    let turnoActual = 0;
-    
-    function iniciarBlackjack() {
-        let numJugadores = parseInt(document.getElementById("numJugadores").value);
-        jugadores = [];
-        turnoActual = 0;
-        let jugadoresDiv = document.getElementById("jugadores");
-        jugadoresDiv.innerHTML = "";
-        
-        for (let i = 0; i < numJugadores; i++) {
-            jugadores.push({ nombre: `Jugador ${i + 1}`, puntaje: lanzarDado() + lanzarDado(), plantado: false });
-            let jugadorDiv = document.createElement("div");
-            jugadorDiv.id = `jugador-${i}`;
-            jugadorDiv.innerHTML = `<p class='text-light'><strong>${jugadores[i].nombre}</strong>: <span id='puntaje-${i}'>${jugadores[i].puntaje}</span> puntos</p>
-            <button class='btn btn-primary btn-sm' onclick='pedirDado(${i})'>➕ Pedir</button>
-            <button class='btn btn-danger btn-sm' onclick='plantarse(${i})'>✋ Plantarse</button>`;
-            jugadoresDiv.appendChild(jugadorDiv);
+    let turnoJugador = 0;
+    let gameOver = false;
+    let intentosMaximos = 20;
+
+    // Generación del tablero de Bingo (números del 1 al 12)
+    function generarTablero() {
+        return Array.from({ length: 12 }, (_, i) => i + 1);
+    }
+
+    // Mostrar los tableros de todos los jugadores
+    function mostrarTableros() {
+        let playerBoardsHTML = '';
+        jugadores.forEach((jugador, index) => {
+            playerBoardsHTML += `
+                <div class="player">
+                    <p class="player-name">${jugador.nombre}</p>
+                    <div class="board" id="board-${index}">
+                        ${jugador.tablero.map(num => `
+                            <div class="cell" id="cell-${index}-${num}">${num}</div>
+                        `).join('')}
+                    </div>
+                    <p>Intentos restantes: <span id="intentos-${index}">${intentosMaximos - jugador.intentos}</span></p>
+                </div>
+            `;
+        });
+        document.getElementById('player-boards').innerHTML = playerBoardsHTML;
+    }
+
+    // Marcar el número en el tablero del jugador
+    function marcarNumero(num, jugadorIndex) {
+        const jugador = jugadores[jugadorIndex];
+        if (!jugador.numerosMarcados.includes(num) && jugador.tablero.includes(num)) {
+            jugador.numerosMarcados.push(num);
+            document.getElementById(`cell-${jugadorIndex}-${num}`).classList.add('marked');
         }
     }
-    
-    function pedirDado(jugador) {
-        if (jugadores[jugador].plantado) return;
-        let nuevoDado = lanzarDado();
-        jugadores[jugador].puntaje += nuevoDado;
-        document.getElementById(`puntaje-${jugador}`).textContent = jugadores[jugador].puntaje;
-        if (jugadores[jugador].puntaje > 21) {
-            document.getElementById(`jugador-${jugador}`).innerHTML += " <span class='text-danger'>💥 Eliminado</span>";
-            jugadores[jugador].plantado = true;
+
+    // Función para generar números
+    function generarNumero() {
+        if (gameOver) return; // Si el juego terminó, no hacer nada
+
+        const jugador = jugadores[turnoJugador];
+
+        if (jugador.intentos >= intentosMaximos) {
+            document.getElementById('status').textContent = `${jugador.nombre} se ha quedado sin intentos. El juego termina.`;
+            gameOver = true;
+            mostrarGanador();
+            document.getElementById('nuevo-juego').style.display = 'inline-block';
+            return;
+        }
+
+        // Generamos dos números aleatorios entre 1 y 6
+        let num1 = Math.floor(Math.random() * 6) + 1;
+        let num2 = Math.floor(Math.random() * 6) + 1;
+
+        document.getElementById('status').textContent = `Números generados: ${num1} y ${num2}`;
+
+        // Calculamos la suma de los dos dados
+        let suma = num1 + num2;
+
+        // Si la casilla de la suma es 2 y está marcada, se marca la casilla 1
+        if (suma === 2 && jugador.numerosMarcados.includes(2)) {
+            if (!jugador.numerosMarcados.includes(1)) {
+                marcarNumero(1, turnoJugador);
+            }
+        } else if (!jugador.numerosMarcados.includes(suma)) {
+            marcarNumero(suma, turnoJugador);
+        }
+
+        // Mostrar los dados visualmente
+        mostrarDados(num1, num2);
+
+        // Incrementar intentos del jugador actual
+        jugadores[turnoJugador].intentos++;
+
+        // Actualizar la cantidad de intentos restantes
+        document.getElementById(`intentos-${turnoJugador}`).textContent = intentosMaximos - jugadores[turnoJugador].intentos;
+
+        // Cambiar de turno
+        siguienteJugador();
+    }
+
+    // Función para mostrar los dados visualmente
+    function mostrarDados(num1, num2) {
+        const dadoDisplay = document.getElementById('dado-display');
+        dadoDisplay.innerHTML = `
+            <div class="dado" data-num="${num1}">${crearPuntosDado(num1)}</div>
+            <div class="dado" data-num="${num2}">${crearPuntosDado(num2)}</div>
+        `;
+    }
+
+    // Crear los puntos para el dado según el número
+    function crearPuntosDado(num) {
+        let puntos = '';
+        for (let i = 0; i < num; i++) {
+            puntos += `<div class="punto"></div>`;
+        }
+        return puntos;
+    }
+
+    // Cambiar de turno
+    function siguienteJugador() {
+        turnoJugador = (turnoJugador + 1) % jugadores.length;
+        document.getElementById('turn-indicator').textContent = `Es el turno de ${jugadores[turnoJugador].nombre}`;
+    }
+
+    // Verificar el ganador
+    function mostrarGanador() {
+        let maxCasillasCompletadas = 0;
+        let ganadores = [];
+
+        jugadores.forEach((jugador) => {
+            if (jugador.numerosMarcados.length > maxCasillasCompletadas) {
+                maxCasillasCompletadas = jugador.numerosMarcados.length;
+                ganadores = [jugador.nombre]; // Nuevo ganador
+            } else if (jugador.numerosMarcados.length === maxCasillasCompletadas) {
+                ganadores.push(jugador.nombre); // Empate
+            }
+        });
+
+        const resultadoElement = document.getElementById('resultado');
+        if (ganadores.length > 1) {
+            resultadoElement.textContent = ` 🤝EMPATE LOS GANADORES SON 👌: ${ganadores.join(', ')}`;
+            resultadoElement.classList.add('empate');
+        } else {
+            resultadoElement.textContent = `${ganadores[0]} ES EL GANADOR DE LA PARTIDA `;
+            resultadoElement.classList.add('victoria');
         }
     }
-    
-    function plantarse(jugador) {
-        jugadores[jugador].plantado = true;
-        document.getElementById(`jugador-${jugador}`).innerHTML += " <span class='text-success'>✔️ Plantado</span>";
+
+    // Iniciar un nuevo juego
+    function nuevoJuego() {
+        let cantidadJugadores = parseInt(prompt("¿Cuántos jugadores participan? (1-4 jugadores)"));
+        if (cantidadJugadores >= 1 && cantidadJugadores <= 4) {
+            jugadores = [];
+            let tableroComun = generarTablero();
+
+            for (let i = 0; i < cantidadJugadores; i++) {
+                const nombre = prompt(`Ingresa el nombre del jugador ${i + 1}`);
+                jugadores.push({
+                    nombre: nombre,
+                    tablero: [...tableroComun],
+                    numerosMarcados: [],
+                    intentos: 0,  // Iniciar con 0 intentos
+                });
+            }
+            gameOver = false;
+            turnoJugador = 0;
+            mostrarTableros();
+            document.getElementById('status').textContent = `Es el turno de ${jugadores[turnoJugador].nombre}`;
+            document.getElementById('nuevo-juego').style.display = 'none'; // Ocultar el botón al inicio
+            document.getElementById('resultado').textContent = ''; // Limpiar el resultado anterior
+            document.getElementById('resultado').classList.remove('empate', 'victoria');
+        } else {
+            alert('Por favor ingresa un número de jugadores válido.');
+        }
     }
-    
-    function lanzarDado() {
-        return Math.floor(Math.random() * 6) + 1;
-    }
+
+    // Asignar eventos
+    document.getElementById('btn-generar-numero').addEventListener('click', generarNumero);
+    document.getElementById('nuevo-juego').addEventListener('click', nuevoJuego);
+
+    nuevoJuego();
 </script>
+
 </body>
 </html>

@@ -3,110 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bingo de Dados</title>
+    <title>Bingo de Números Aleatorios</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             flex-direction: column;
-            color: #333;
         }
-
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            color: #4CAF50;
-        }
-
         .game-container {
+            text-align: center;
             background-color: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 900px;
-            text-align: center;
-        }
-
-        .status, #turn-indicator {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #555;
-        }
-
-        #turn-indicator {
-            color: #4CAF50;
-        }
-
-        .dice {
-            margin-top: 20px;
-        }
-
-        button {
-            padding: 12px 25px;
-            font-size: 1.1em;
-            cursor: pointer;
-            border: none;
-            border-radius: 8px;
-            background-color: #4CAF50;
-            color: white;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .player-board {
-            display: flex;
-            justify-content: space-evenly;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
-
-        .player {
-            background-color: #fafafa;
-            border: 2px solid #4CAF50;
             padding: 20px;
-            border-radius: 15px;
-            width: 250px;
-            box-sizing: border-box;
-            text-align: center;
-            margin-bottom: 20px;
-            transition: transform 0.3s ease;
-            max-width: 270px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 900px;
         }
-
-        .player:hover {
-            transform: scale(1.05);
-        }
-
-        .player-name {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #4CAF50;
-        }
-
         .board {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 10px;
-            width: 100%;
-            max-width: 240px;
-            margin: 0 auto;
-            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+            margin-top: 20px;
+            justify-items: center;
         }
-
         .cell {
             width: 60px;
             height: 60px;
@@ -115,81 +39,226 @@
             align-items: center;
             border: 2px solid #4CAF50;
             border-radius: 10px;
-            font-size: 1.3em;
-            background-color: #f9f9f9;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-            margin: 5px;
+            font-size: 18px;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s ease;
         }
-
-        .cell:hover {
-            background-color: #f0f0f0;
-            transform: scale(1.1);
-        }
-
-        .cell.marked {
+        .marked {
             background-color: #4CAF50;
             color: white;
             pointer-events: none;
         }
-
-        #nuevo-juego {
-            display: none;
-            margin-top: 30px;
-            font-size: 1.2em;
-            background-color: #FF5733;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
             border: none;
-        }
-
-        #nuevo-juego:hover {
-            background-color: #e04e2d;
-        }
-
-        .dice-result {
-            font-size: 1.5em;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
             margin-top: 20px;
-            color: #333;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .player-board {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 20px;
+            gap: 20px;
+            width: 100%;
+        }
+        .player {
+            border: 2px solid #4CAF50;
+            padding: 10px;
+            border-radius: 10px;
+            width: 45%;
+            text-align: center;
+            min-width: 250px;
+        }
+        .player-name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        #turn-indicator {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        
+        #resultado {
+            margin-top: 30px;
+            font-size: 40px;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #64c982, #ff66cc);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        .empate {
+            background: linear-gradient(135deg, #ffcc00, #ff9900);
+            color: black;
+        }
+        .victoria {
+            background: linear-gradient(135deg, #28a745, #218838);
+        }
+
+        .dado {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background-color: white;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            position: relative;
+            margin: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dado .punto {
+            width: 10px;
+            height: 10px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .dado[data-num="1"] .punto {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .dado[data-num="2"] .punto:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+        .dado[data-num="2"] .punto:nth-child(2) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        .dado[data-num="3"] .punto:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+        .dado[data-num="3"] .punto:nth-child(2) {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .dado[data-num="3"] .punto:nth-child(3) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        .dado[data-num="4"] .punto:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+        .dado[data-num="4"] .punto:nth-child(2) {
+            top: 20%;
+            right: 20%;
+        }
+        .dado[data-num="4"] .punto:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+        }
+        .dado[data-num="4"] .punto:nth-child(4) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        .dado[data-num="5"] .punto:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+        .dado[data-num="5"] .punto:nth-child(2) {
+            top: 20%;
+            right: 20%;
+        }
+        .dado[data-num="5"] .punto:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+        }
+        .dado[data-num="5"] .punto:nth-child(4) {
+            bottom: 20%;
+            right: 20%;
+        }
+        .dado[data-num="5"] .punto:nth-child(5) {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .dado[data-num="6"] .punto:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+        .dado[data-num="6"] .punto:nth-child(2) {
+            top: 20%;
+            right: 20%;
+        }
+        .dado[data-num="6"] .punto:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+        }
+        .dado[data-num="6"] .punto:nth-child(4) {
+            bottom: 20%;
+            right: 20%;
+        }
+        .dado[data-num="6"] .punto:nth-child(5) {
+            top: 50%;
+            left: 20%;
+            transform: translateY(-50%);
+        }
+        .dado[data-num="6"] .punto:nth-child(6) {
+            top: 50%;
+            right: 20%;
+            transform: translateY(-50%);
         }
     </style>
 </head>
 <body>
 
 <div class="game-container">
-    <h1>Bingo de Dados</h1>
+    <h1>Bingo de Números Aleatorios</h1>
     <p id="status">¡Haz tu movimiento!</p>
     <div id="turn-indicator"></div>
 
     <div id="player-boards" class="player-board"></div>
 
-    <div class="dice">
-        <button id="roll-dice">Tirar Dados</button>
-        <p id="dice-result"></p>
-    </div>
-
-    <button id="nuevo-juego">Nuevo Juego</button>
+    <button id="btn-generar-numero">Generar Número</button>
+    <button id="nuevo-juego" style="display: none;">Nuevo Juego</button>
+    <div id="resultado"></div>
+    <div id="dado-display"></div> <!-- Aquí se mostrarán los dados visuales -->
+</div>
+<div class="instructions" style="width: 100%; text-align: center; margin-top: 10px;">
+    <h2>Instrucciones</h2>
+    <p>1. Haz clic en "Generar Número" para lanzar los dados y obtener dos números aleatorios entre 1 y 12.</p>
+    <p>2. Los números generados se sumarán. Si la suma coincide con un número de tu tablero, se marcará esa casilla.</p>
+    <p>3. El objetivo es marcar todos los números de tu tablero antes que los demás jugadores.</p>
+    <p>4. Cada jugador tiene un número limitado de intentos.</p>
+    <p>5. Para que salga el 1 primero debe salir el 2, y si vuelve a salir el 2 en tu turno se marcará el 1.</p>
+    <p>¡Buena suerte y que gane el mejor!</p>
 </div>
 
 <script>
     let jugadores = [];
     let turnoJugador = 0;
-    let tiradasRestantes = 20;
     let gameOver = false;
+    let intentosMaximos = 20;
 
-    // Función para lanzar un par de dados
-    function tirarDados() {
-        return Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6) + 1;
-    }
-
-    // Función para generar el tablero de Bingo
+    // Generación del tablero de Bingo (números del 1 al 12)
     function generarTablero() {
-        return [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        return Array.from({ length: 12 }, (_, i) => i + 1);
     }
 
-    // Función para mostrar las tarjetas de los jugadores
+    // Mostrar los tableros de todos los jugadores
     function mostrarTableros() {
         let playerBoardsHTML = '';
         jugadores.forEach((jugador, index) => {
@@ -197,109 +266,151 @@
                 <div class="player">
                     <p class="player-name">${jugador.nombre}</p>
                     <div class="board" id="board-${index}">
-                        ${jugador.tablero.map((num, i) => {
-                            // Generar filas de manera personalizada
-                            const filas = [
-                                [2, 3, 4],
-                                [5, 6, 7],
-                                [8, 9, 10],
-                                [11, 12]
-                            ];
-
-                            // Mostrar las celdas de acuerdo a las filas
-                            return filas.map(fila => 
-                                fila.includes(num) ? 
-                                `<div class="cell" onclick="marcarNumero(${num}, ${index})">${num}</div>` : ''
-                            ).join('');
-                        }).join('')}
+                        ${jugador.tablero.map(num => `
+                            <div class="cell" id="cell-${index}-${num}">${num}</div>
+                        `).join('')}
                     </div>
-                    <p id="player-${index}-tiradas">Tiradas restantes: ${jugador.tiradasRestantes}</p>
+                    <p>Intentos restantes: <span id="intentos-${index}">${intentosMaximos - jugador.intentos}</span></p>
                 </div>
             `;
         });
         document.getElementById('player-boards').innerHTML = playerBoardsHTML;
     }
 
-    // Función para marcar un número en la tarjeta de un jugador
-    function marcarNumero(numero, jugadorIndex) {
-        if (gameOver) return;
+    // Marcar el número en el tablero del jugador
+    function marcarNumero(num, jugadorIndex) {
         const jugador = jugadores[jugadorIndex];
-        if (jugador.numerosMarcados.includes(numero)) return; // Evitar marcar el mismo número dos veces
-        jugador.numerosMarcados.push(numero);
-        const cells = document.querySelectorAll(`#board-${jugadorIndex} .cell`);
-        cells.forEach(cell => {
-            if (parseInt(cell.textContent) === numero) {
-                cell.classList.add('marked');
-            }
-        });
-        verificarVictoria();
-    }
-
-    // Función para verificar si algún jugador ha ganado
-    function verificarVictoria() {
-        if (gameOver) return;
-        const player = jugadores[turnoJugador];
-        if (player.numerosMarcados.length === 11) {  // 11 números para un tablero completo (2-12)
-            gameOver = true;
-            document.getElementById('status').textContent = `${player.nombre} ¡GANÓ con todos los números marcados!`;
-            document.getElementById('nuevo-juego').style.display = 'inline-block';
+        if (!jugador.numerosMarcados.includes(num) && jugador.tablero.includes(num)) {
+            jugador.numerosMarcados.push(num);
+            document.getElementById(`cell-${jugadorIndex}-${num}`).classList.add('marked');
         }
     }
 
-    // Función para lanzar los dados y mostrar el resultado
-    function lanzarDados() {
-        if (gameOver) return;
-        const jugadorActual = jugadores[turnoJugador];
+    // Función para generar números
+    function generarNumero() {
+        if (gameOver) return; // Si el juego terminó, no hacer nada
 
-        if (jugadorActual.tiradasRestantes === 0) {
-            siguienteJugador();
+        const jugador = jugadores[turnoJugador];
+
+        if (jugador.intentos >= intentosMaximos) {
+            document.getElementById('status').textContent = `${jugador.nombre} se ha quedado sin intentos. El juego termina.`;
+            gameOver = true;
+            mostrarGanador();
+            document.getElementById('nuevo-juego').style.display = 'inline-block';
             return;
         }
 
-        const resultado = tirarDados();
-        document.getElementById('dice-result').textContent = `¡Los dados muestran: ${resultado}!`;
-        marcarNumero(resultado, turnoJugador);
-        jugadorActual.tiradasRestantes--;
-        document.getElementById(`player-${turnoJugador}-tiradas`).textContent = `Tiradas restantes: ${jugadorActual.tiradasRestantes}`;
+        // Generamos dos números aleatorios entre 1 y 6
+        let num1 = Math.floor(Math.random() * 6) + 1;
+        let num2 = Math.floor(Math.random() * 6) + 1;
+
+        document.getElementById('status').textContent = `Números generados: ${num1} y ${num2}`;
+
+        // Calculamos la suma de los dos dados
+        let suma = num1 + num2;
+
+        // Si la casilla de la suma es 2 y está marcada, se marca la casilla 1
+        if (suma === 2 && jugador.numerosMarcados.includes(2)) {
+            if (!jugador.numerosMarcados.includes(1)) {
+                marcarNumero(1, turnoJugador);
+            }
+        } else if (!jugador.numerosMarcados.includes(suma)) {
+            marcarNumero(suma, turnoJugador);
+        }
+
+        // Mostrar los dados visualmente
+        mostrarDados(num1, num2);
+
+        // Incrementar intentos del jugador actual
+        jugadores[turnoJugador].intentos++;
+
+        // Actualizar la cantidad de intentos restantes
+        document.getElementById(`intentos-${turnoJugador}`).textContent = intentosMaximos - jugadores[turnoJugador].intentos;
+
+        // Cambiar de turno
         siguienteJugador();
     }
 
-    // Función para avanzar al siguiente jugador
+    // Función para mostrar los dados visualmente
+    function mostrarDados(num1, num2) {
+        const dadoDisplay = document.getElementById('dado-display');
+        dadoDisplay.innerHTML = `
+            <div class="dado" data-num="${num1}">${crearPuntosDado(num1)}</div>
+            <div class="dado" data-num="${num2}">${crearPuntosDado(num2)}</div>
+        `;
+    }
+
+    // Crear los puntos para el dado según el número
+    function crearPuntosDado(num) {
+        let puntos = '';
+        for (let i = 0; i < num; i++) {
+            puntos += `<div class="punto"></div>`;
+        }
+        return puntos;
+    }
+
+    // Cambiar de turno
     function siguienteJugador() {
         turnoJugador = (turnoJugador + 1) % jugadores.length;
         document.getElementById('turn-indicator').textContent = `Es el turno de ${jugadores[turnoJugador].nombre}`;
     }
 
-    // Función para iniciar el juego
+    // Verificar el ganador
+    function mostrarGanador() {
+        let maxCasillasCompletadas = 0;
+        let ganadores = [];
+
+        jugadores.forEach((jugador) => {
+            if (jugador.numerosMarcados.length > maxCasillasCompletadas) {
+                maxCasillasCompletadas = jugador.numerosMarcados.length;
+                ganadores = [jugador.nombre]; // Nuevo ganador
+            } else if (jugador.numerosMarcados.length === maxCasillasCompletadas) {
+                ganadores.push(jugador.nombre); // Empate
+            }
+        });
+
+        const resultadoElement = document.getElementById('resultado');
+        if (ganadores.length > 1) {
+            resultadoElement.textContent = ` 🤝EMPATE LOS GANADORES SON 👌: ${ganadores.join(', ')}`;
+            resultadoElement.classList.add('empate');
+        } else {
+            resultadoElement.textContent = `${ganadores[0]} ES EL GANADOR DE LA PARTIDA `;
+            resultadoElement.classList.add('victoria');
+        }
+    }
+
+    // Iniciar un nuevo juego
     function nuevoJuego() {
         let cantidadJugadores = parseInt(prompt("¿Cuántos jugadores participan? (1-4 jugadores)"));
         if (cantidadJugadores >= 1 && cantidadJugadores <= 4) {
             jugadores = [];
+            let tableroComun = generarTablero();
+
             for (let i = 0; i < cantidadJugadores; i++) {
-                let nombre = prompt(`Ingresa el nombre del jugador ${i + 1}:`);
+                const nombre = prompt(`Ingresa el nombre del jugador ${i + 1}`);
                 jugadores.push({
                     nombre: nombre,
-                    tablero: generarTablero(),
+                    tablero: [...tableroComun],
                     numerosMarcados: [],
-                    tiradasRestantes: 20
+                    intentos: 0,  // Iniciar con 0 intentos
                 });
             }
             gameOver = false;
             turnoJugador = 0;
             mostrarTableros();
             document.getElementById('status').textContent = `Es el turno de ${jugadores[turnoJugador].nombre}`;
-            document.getElementById('nuevo-juego').style.display = 'none';
-            document.getElementById('roll-dice').style.display = 'inline-block';
+            document.getElementById('nuevo-juego').style.display = 'none'; // Ocultar el botón al inicio
+            document.getElementById('resultado').textContent = ''; // Limpiar el resultado anterior
+            document.getElementById('resultado').classList.remove('empate', 'victoria');
         } else {
-            alert("Por favor, ingresa un número válido de jugadores (1-4).");
+            alert('Por favor ingresa un número de jugadores válido.');
         }
     }
 
-    // Eventos de botones
-    document.getElementById('roll-dice').addEventListener('click', lanzarDados);
+    // Asignar eventos
+    document.getElementById('btn-generar-numero').addEventListener('click', generarNumero);
     document.getElementById('nuevo-juego').addEventListener('click', nuevoJuego);
 
-    // Inicializar juego
     nuevoJuego();
 </script>
 
